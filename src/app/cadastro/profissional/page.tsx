@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowLeft, Upload, Camera, ExternalLink, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { SERVICE_CATEGORIES } from '@/lib/types';
@@ -18,7 +19,7 @@ const professionalSchema = z.object({
   phone: z.string().min(10, 'Telefone inválido'),
   cnpj: z.string().optional(),
   address: z.string().min(10, 'Endereço completo é obrigatório'),
-  serviceCategory: z.string().min(1, 'Selecione uma categoria'),
+  serviceCategories: z.array(z.string()).min(1, 'Selecione pelo menos uma área de atuação'),
   serviceDescription: z.string().min(20, 'Descreva seus serviços (mínimo 20 caracteres)'),
   basePrice: z.string().min(1, 'Informe um preço base'),
 });
@@ -29,7 +30,7 @@ export default function CadastroProfissional() {
   const [step, setStep] = useState(1);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [hasCNPJ, setHasCNPJ] = useState<boolean | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   const {
     register,
@@ -54,6 +55,15 @@ export default function CadastroProfissional() {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleCategoryToggle = (category: string) => {
+    const newCategories = selectedCategories.includes(category)
+      ? selectedCategories.filter(c => c !== category)
+      : [...selectedCategories, category];
+    
+    setSelectedCategories(newCategories);
+    setValue('serviceCategories', newCategories);
   };
 
   return (
@@ -338,27 +348,49 @@ export default function CadastroProfissional() {
                 <p className="text-sm text-gray-600">Informações sobre os serviços que você oferece</p>
               </div>
               <div className="space-y-6">
-                {/* Categoria de Serviço */}
+                {/* Áreas de Atuação - MÚLTIPLA SELEÇÃO */}
                 <div>
-                  <Label htmlFor="serviceCategory">Categoria Principal *</Label>
-                  <select
-                    id="serviceCategory"
-                    value={selectedCategory}
-                    onChange={(e) => {
-                      setSelectedCategory(e.target.value);
-                      setValue('serviceCategory', e.target.value);
-                    }}
-                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Selecione sua área de atuação</option>
+                  <Label>Áreas de Atuação * (Selecione uma ou mais)</Label>
+                  <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {SERVICE_CATEGORIES.map((category) => (
-                      <option key={category} value={category}>
-                        {category}
-                      </option>
+                      <div
+                        key={category}
+                        className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                        onClick={() => handleCategoryToggle(category)}
+                      >
+                        <Checkbox
+                          id={category}
+                          checked={selectedCategories.includes(category)}
+                          onCheckedChange={() => handleCategoryToggle(category)}
+                        />
+                        <Label
+                          htmlFor={category}
+                          className="cursor-pointer flex-1"
+                        >
+                          {category}
+                        </Label>
+                      </div>
                     ))}
-                  </select>
-                  {errors.serviceCategory && (
-                    <p className="text-sm text-red-600 mt-1">{errors.serviceCategory.message}</p>
+                  </div>
+                  {errors.serviceCategories && (
+                    <p className="text-sm text-red-600 mt-2">{errors.serviceCategories.message}</p>
+                  )}
+                  {selectedCategories.length > 0 && (
+                    <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <p className="text-sm font-medium text-gray-900 mb-2">
+                        Áreas selecionadas ({selectedCategories.length}):
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedCategories.map((cat) => (
+                          <span
+                            key={cat}
+                            className="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-sm rounded-full"
+                          >
+                            {cat}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </div>
 

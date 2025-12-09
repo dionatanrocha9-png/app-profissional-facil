@@ -13,10 +13,12 @@ export interface Professional {
   addressProof: string;
   criminalRecord: string;
   services: Service[];
+  serviceCategories: ServiceCategory[]; // MODIFICADO: agora suporta múltiplas categorias
   rating: number;
   reviewCount: number;
   location: Location;
   verified: boolean;
+  active: boolean; // ADICIONADO: para ativar/desativar usuários
   createdAt: Date;
   paymentStatus: 'active' | 'pending' | 'expired';
   nextPaymentDue?: Date;
@@ -29,6 +31,7 @@ export interface Client {
   cpf: string;
   address: string;
   phone: string;
+  active: boolean; // ADICIONADO: para ativar/desativar usuários
   createdAt: Date;
 }
 
@@ -129,6 +132,29 @@ export interface ChatConversation {
   unreadCount: number;
   active: boolean;
   canExchangeContacts: boolean;
+}
+
+// ADICIONADO: Tipos para configurações do app
+export interface AppSettings {
+  id: string;
+  settingKey: string;
+  settingValue: string;
+  description?: string;
+  updatedAt: Date;
+}
+
+// ADICIONADO: Tipos para promoções
+export interface Promotion {
+  id: string;
+  title: string;
+  description: string;
+  discountPercentage: number;
+  discountAmount?: number;
+  startDate: Date;
+  endDate: Date;
+  active: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export const SERVICE_CATEGORIES = [
