@@ -29,7 +29,7 @@ type ProfessionalFormData = z.infer<typeof professionalSchema>;
 export default function CadastroProfissional() {
   const [step, setStep] = useState(1);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [hasCNPJ, setHasCNPJ] = useState<boolean | null>(null);
+  const [hasCNPJ, setHasCNPJ] = useState<boolean>(false); // Inicializado como false para evitar null
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   const {
@@ -67,7 +67,7 @@ export default function CadastroProfissional() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-8 px-4" suppressHydrationWarning>
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="mb-8">
